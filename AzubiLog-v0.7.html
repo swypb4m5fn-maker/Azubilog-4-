@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2563eb">
+<title>AzubiLog v0.7</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f7fb;color:#172033}
+.app{max-width:850px;margin:auto;padding:18px 16px 90px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:20px}.logo{width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,#2563eb,#60a5fa);display:grid;place-items:center}.logo svg{width:35px;height:35px}.brand h1{margin:0;font-size:24px}.brand p{margin:2px 0 0;color:#64748b;font-size:13px}
+.hero{background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;border-radius:24px;padding:25px;text-align:center;box-shadow:0 14px 30px #2563eb30}.hero h2{margin:0 0 6px;font-size:27px}.hero p{margin:0 0 18px;opacity:.9}.mic{width:88px;height:88px;border:0;border-radius:50%;background:#fff;color:#2563eb;font-size:39px;cursor:pointer;box-shadow:0 8px 20px #0002}.mic.listening{background:#fee2e2;color:#dc2626}.manual{display:block;margin:15px auto 0;border:1px solid #ffffff66;background:#ffffff1c;color:#fff;border-radius:12px;padding:11px 16px;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.stat{background:#fff;border-radius:17px;padding:15px;text-align:center;box-shadow:0 3px 12px #0f172a0b}.stat strong{display:block;font-size:23px}.stat span{font-size:12px;color:#64748b}
+.search{width:100%;padding:13px 15px;border:1px solid #dbe2ea;border-radius:13px;font-size:15px;background:#fff;margin:3px 0 10px}
+.filters{display:flex;gap:8px;overflow:auto;padding-bottom:8px}.filter{white-space:nowrap;border:1px solid #dbe2ea;background:#fff;border-radius:999px;padding:8px 12px}.filter.active{background:#2563eb;color:#fff;border-color:#2563eb}
+.entry{background:#fff;border-radius:18px;padding:17px;margin-top:11px;box-shadow:0 3px 14px #0f172a0c}.top{display:flex;justify-content:space-between;gap:8px}.tag{font-size:11px;background:#dbeafe;color:#1d4ed8;padding:5px 9px;border-radius:999px}.date{font-size:12px;color:#64748b}.entry h3{margin:10px 0 6px}.entry p{color:#475569;line-height:1.45;margin:6px 0}.photo{width:100%;max-height:280px;object-fit:cover;border-radius:13px;margin-top:10px}.actions{display:flex;gap:8px;margin-top:13px}.actions button{border:0;border-radius:10px;padding:8px 11px}.important{background:#fef3c7}.delete{background:#fee2e2;color:#b91c1c}
+.empty{text-align:center;padding:35px 10px;color:#64748b}
+nav{position:fixed;bottom:0;left:0;right:0;background:#ffffffee;backdrop-filter:blur(10px);border-top:1px solid #e2e8f0;display:flex;justify-content:center;gap:5px;padding:9px;z-index:5}nav button{border:0;background:transparent;padding:8px 15px;border-radius:11px;color:#475569}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:10;align-items:flex-end;justify-content:center}.modal.show{display:flex}.box{width:min(600px,100%);background:#fff;border-radius:24px 24px 0 0;padding:22px;max-height:94vh;overflow:auto}.box h2{margin-top:0}.close{float:right;border:0;background:#f1f5f9;border-radius:50%;width:34px;height:34px}.box label{display:block;font-weight:700;margin:13px 0 6px}.box input,.box textarea,.box select{width:100%;padding:12px;border:1px solid #dbe2ea;border-radius:11px;font:inherit}.box textarea{min-height:100px;resize:vertical}.save{margin-top:17px;width:100%;border:0;background:#2563eb;color:#fff;padding:13px;border-radius:12px;font-weight:800;font-size:16px}.preview{display:none;width:100%;max-height:220px;object-fit:cover;border-radius:13px;margin-top:10px}.photoBtn{display:block;width:100%;padding:12px;border:1px dashed #94a3b8;background:#f8fafc;border-radius:12px;margin-top:5px}
+.dark{background:#0f172a;color:#e5e7eb}.dark .stat,.dark .entry,.dark .search,.dark .filter,.dark nav,.dark .box{background:#1e293b;color:#e5e7eb}.dark .entry p,.dark .brand p,.dark .date,.dark .stat span{color:#94a3b8}.dark .search,.dark .filter,.dark .box input,.dark .box textarea,.dark .box select{border-color:#334155}.dark .photoBtn{background:#0f172a;color:#e5e7eb;border-color:#475569}
+@media(min-width:700px){.app{padding-top:30px}.modal{align-items:center}.box{border-radius:24px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo"><svg viewBox="0 0 48 48" fill="none"><rect x="10" y="6" width="28" height="36" rx="5" fill="white"/><path d="M16 15h16M16 22h16M16 29h10" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/><circle cx="34" cy="34" r="7" fill="#f59e0b"/><path d="m31 34 2 2 4-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="brand"><h1>AzubiLog</h1><p>Sprechen. Speichern. Weiterkommen.</p></div></header>
+
+<section class="hero"><h2>Dein Ausbildungstag</h2><p>Dokumentiere schnell, was du gemacht und gelernt hast.</p><button class="mic" id="mic">🎤</button><div id="status">Tippen und sprechen</div><button class="manual" onclick="openModal()">✏️ Eintrag manuell erstellen</button></section>
+
+<section class="stats"><div class="stat"><strong id="count">0</strong><span>Einträge</span></div><div class="stat"><strong id="impCount">0</strong><span>Wichtig</span></div><div class="stat"><strong id="learnCount">0</strong><span>Gelernt</span></div></section>
+
+<input class="search" id="search" placeholder="🔎 Einträge durchsuchen...">
+<div class="filters" id="filters"></div>
+<div id="entries"></div>
+</div>
+
+<nav><button onclick="scrollTo({top:0,behavior:'smooth'})">🏠 Start</button><button onclick="calendar()">📅 Kalender</button><button onclick="document.getElementById('search').focus()">🔎 Suche</button><button onclick="toggleDark()">🌙 Design</button></nav>
+
+<div class="modal" id="modal"><div class="box">
+<button class="close" onclick="closeModal()">×</button><h2>Neuer Eintrag</h2>
+<label>Titel</label><input id="title" placeholder="z. B. Werkzeug eingerichtet">
+<label>Was hast du gemacht?</label><textarea id="desc" placeholder="Beschreibe deinen Tag..."></textarea>
+<label>Was hast du gelernt?</label><textarea id="learned" placeholder="Was möchtest du dir merken?"></textarea>
+<label>Kategorie</label><select id="cat"><option>Praxis</option><option>Berufsschule</option><option>Software</option><option>Werkzeuge</option><option>Kundenkontakt</option><option>Gelernt</option><option>Fragen</option><option>Wichtig</option></select>
+<label>Datum</label><input id="date" type="date">
+<label>Foto</label>
+<input id="photo" type="file" accept="image/*" capture="environment" hidden>
+<button class="photoBtn" onclick="document.getElementById('photo').click()">📷 Foto aufnehmen / auswählen</button>
+<img id="preview" class="preview">
+<button class="save" onclick="save()">💾 Eintrag speichern</button>
+</div></div>
+
+<script>
+const KEY="azubiLogEntriesV07";let entries=JSON.parse(localStorage.getItem(KEY)||"[]"),filter="Alle";
+const cats=["Alle","Praxis","Berufsschule","Software","Werkzeuge","Kundenkontakt","Gelernt","Fragen","Wichtig"];
+const $=id=>document.getElementById(id);
+function esc(s=""){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function renderFilters(){$("filters").innerHTML=cats.map(c=>`<button class="filter ${filter===c?"active":""}" onclick="setFilter('${c}')">${c}</button>`).join("")}
+function render(){renderFilters();let q=$("search").value.toLowerCase();let list=entries.filter(e=>(filter==="Alle"||e.cat===filter)&&(`${e.title} ${e.desc} ${e.learned} ${e.cat}`).toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date));
+$("entries").innerHTML=list.length?list.map(e=>`<article class="entry"><div class="top"><span class="tag">${esc(e.cat)}</span><span class="date">${esc(e.date)}</span></div><h3>${e.imp?"⭐ ":""}${esc(e.title||"Ohne Titel")}</h3><p>${esc(e.desc)}</p>${e.learned?`<p><strong>💡 Gelernt:</strong> ${esc(e.learned)}</p>`:""}${e.photo?`<img class="photo" src="${e.photo}" alt="Foto zum Eintrag">`:""}<div class="actions"><button class="important" onclick="important('${e.id}')">${e.imp?"⭐ Wichtig":"☆ Wichtig"}</button><button class="delete" onclick="removeEntry('${e.id}')">🗑️ Löschen</button></div></article>`).join(""):`<div class="empty">Noch keine passenden Einträge.<br>Starte mit deinem ersten Ausbildungstag! 🚀</div>`;
+$("count").textContent=entries.length;$("impCount").textContent=entries.filter(e=>e.imp).length;$("learnCount").textContent=entries.filter(e=>e.learned?.trim()).length}
+function setFilter(c){filter=c;render()}
+function openModal(text=""){$("modal").classList.add("show");$("date").value=new Date().toISOString().slice(0,10);$("desc").value=text;$("title").value=text?text.split(/\s+/).slice(0,6).join(" "):"";$("preview").style.display="none";$("photo").value="";$("title").focus()}
+function closeModal(){$("modal").classList.remove("show")}
+function save(){if(!$("desc").value.trim())return alert("Bitte beschreibe kurz, was du gemacht hast.");let photo=$("preview").src&&$("preview").style.display!=="none"?$("preview").src:"";entries.push({id:Date.now().toString(),title:$("title").value.trim(),desc:$("desc").value.trim(),learned:$("learned").value.trim(),cat:$("cat").value,date:$("date").value,imp:false,photo});localStorage.setItem(KEY,JSON.stringify(entries));closeModal();["title","desc","learned"].forEach(x=>$(x).value="");render()}
+function important(id){let e=entries.find(x=>x.id===id);if(e)e.imp=!e.imp;localStorage.setItem(KEY,JSON.stringify(entries));render()}
+function removeEntry(id){if(confirm("Diesen Eintrag wirklich löschen?")){entries=entries.filter(e=>e.id!==id);localStorage.setItem(KEY,JSON.stringify(entries));render()}}
+function toggleDark(){document.body.classList.toggle("dark");localStorage.setItem("azubiDark",document.body.classList.contains("dark"))}
+function calendar(){let d={};entries.forEach(e=>d[e.date]=(d[e.date]||0)+1);let t=Object.keys(d).sort().reverse().map(x=>`${x}: ${d[x]} Eintrag${d[x]>1?"e":""}`).join("\\n");alert(t?`Deine dokumentierten Tage:\\n\\n${t}`:"Noch keine Einträge im Kalender.")}
+$("search").oninput=render;
+$("photo").onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{$("preview").src=r.result;$("preview").style.display="block"};r.readAsDataURL(f)};
+if(localStorage.getItem("azubiDark")==="true")document.body.classList.add("dark");
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SR){let r=new SR;r.lang="de-DE";r.continuous=false;r.interimResults=false;$("mic").onclick=()=>{try{r.start()}catch(e){}};r.onstart=()=>{$("mic").classList.add("listening");$("status").textContent="Ich höre zu …"};r.onend=()=>{$("mic").classList.remove("listening");$("status").textContent="Tippen und sprechen"};r.onresult=e=>openModal(e.results[0][0].transcript);r.onerror=()=>{$("status").textContent="Bitte erneut versuchen."}}else $("mic").onclick=()=>alert("Spracheingabe wird von diesem Browser nicht unterstützt.");
+render();
+</script>
+</body>
+</html>
